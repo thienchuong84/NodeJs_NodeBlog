@@ -10,19 +10,21 @@ block content
   form(method='post', action='/posts/add', enctype="multipart/form-data")
     .form-group
       label Title
-      input.form-control(name='title', type='text')
+      input.form-control(name='title', type='text', value=(undefined===post ? '' : post.title))
     .form-group
       label Category
-      input.form-control(name='category', type='text')
+      select.form-control(name='category', type='text', value=(undefined === post ? '' : post.category))
+        each c, i in categories
+          option(value=c.name) #{c.name}
     .form-group
       label Body
-      textarea.form-control(name="body", id="body")
+      textarea.form-control(name="body", id="body", value=(undefined===post ? '' : post.body))
     .form-group
       label Main Image
       input.form-control(name='mainimage', type='file')
     .form-group
       label Author
-      select.form-control(name='author')
+      select.form-control(name='author', value=(undefined===post ? '' : post.author))
         option(value='Chuong Nguyen') Chuong Nguyen
         option(value="Brad Traversy") Brad Traversy
     input.btn.btn-default(name='submit', type='submit', value='Save')

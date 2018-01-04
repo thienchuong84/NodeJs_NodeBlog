@@ -1,63 +1,69 @@
 var Post = require('../models/post');
-var multer = require('multer');
-var upload = multer({ dest: 'uploads/' });
+var Category = require('../models/category');
+var async = require('async');
+
+const { body, validationResult } = require('express-validator/check');
+const { sanitizeBody } = require('express-validator/filter');
 
 // get /posts/add
 exports.get_add = function(req, res) {
     // res.send('Not Imolemented: /posts/add');
-    res.render('addPost', {
-        title: 'Add Post'
+
+    // res.render('addPost', {
+    //     title: 'Add Post'
+    // });
+
+    async.parallel({
+        categories: function(callback) {
+            Category.find().exec(callback);
+        }
+    }, function(err, results) {
+        if (err) {
+            return next(err);
+        }
+        // if (results.categories == null) {
+
+        // }
+        console.log(results.categories);
+        res.render('addPost', {
+            title: 'Add Posts',
+            categories: results.categories
+        });
     });
 }
 
-exports.post_add = function(req, res, next) {
-    // get value submit
-    var title = req.body.title;
-    var category = req.body.category;
-    var body = req.body.body;
-    var author = req.body.author;
-    var date = new Date();
+exports.post_add = [
+    // validate and sanitize title
+    body('title', 'Title field required').isLength({ min: 1 }).trim(),
+    sanitizeBody('title').trim().escape(),
+    body('body', 'Body field required').isLength({ min: 1 }).trim(),
+    sanitizeBody('body').trim().escape(),
+    function(req, res, next) {
+        console.log(req.body);
+        // extract the validation errors from a request
+        const errors = validationResult(req);
 
-    // handle image
-    if (req.file) {
-        var mainimage = req.file.filename;
-    } else {
-        var mainimage = 'noimage.jpg';
+        // create post object with escaped and trim data
+        var post = new Post({
+            title: req.body.title,
+            category: req.body.category,
+            body: req.body.body,
+            author: req.body.author
+        });
+
+        if (!errors.isEmpty()) {
+            res.render('addPost', {
+                title: 'Add Posts',
+                post: post,
+                errors: errors.array()
+            });
+        } else {
+            post.save(function(err) {
+                if (err) {
+                    return next(err);
+                }
+                res.redirect('/');
+            })
+        }
     }
-
-    console.log(req.body);
-
-    res.send('Not Implement');
-
-    // // form validation
-    // req.checkBody('title', 'Title field is required').notEmpty();
-    // res.checkBody('body', 'Body field is required').notEmpty();
-
-    // // check errors
-    // var errors = req.validationErrors();
-
-
-    // if (errors) {
-    //     res.render('addPost', {
-    //         "errors": errors
-    //     });
-    // } else {
-    //     // // insert post to mongodb by mongoose
-    //     // posts.insert({
-    //     //     "title": title,
-    //     //     "body": body,
-    //     //     "category": category,
-    //     //     "date": date,
-    //     //     "author": author,
-    //     //     "mainimage": mainimage
-    //     // }, function(err, post) {
-    //     //     if (err) {
-    //     //         res.send(err);
-    //     //     } else {
-    //     //         req.flash('success', 'Post Add');
-    //     //         res.location('/');
-    //     //         res.redirect('/');
-    //     //     }
-    //     // });
-    // }
-}
+]
