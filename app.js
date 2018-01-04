@@ -7,13 +7,10 @@ var bodyParser = require('body-parser');
 const session = require('express-session'); // add
 const multer = require('multer'); // add
 const upload = multer({ dest: '/uploads/' }); // add
-const moment = require('moment'); // add
 const expressValidator = require('express-validator'); // add
 const mongo = require('mongodb'); // add
 
-// const urlDb = 'mongodb://localhost/nodeblog'; // add
-// const mongoose = require('mongoose');
-// mongoose.connect(urlDb);
+
 
 var mongoose = require('mongoose');
 var mongoDb = 'mongodb://127.0.0.1/nodeblog';
@@ -27,8 +24,11 @@ db.on('error', console.error.bind(console, 'MongoDb connection error:'));
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var posts = require('./routes/posts');
 
 var app = express();
+
+app.locals.moment = require('moment');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -49,7 +49,26 @@ app.use(session({
     resave: true
 }));
 
-// // add express-validator
+// // // add express-validator
+// app.use(expressValidator({
+//     errorFormatter: function(param, msg, value) {
+//         var namespace = param.split('.'),
+//             root = namespace.shift(),
+//             formParam = root;
+
+//         while (namespace.length) {
+//             formParam += '[' + namespace.shift() + ']';
+//         }
+
+//         return {
+//             param: formParam,
+//             msg: msg,
+//             value: value
+//         }
+//     }
+// }));
+
+// Express Validator
 app.use(expressValidator({
     errorFormatter: function(param, msg, value) {
         var namespace = param.split('.'),
@@ -59,12 +78,11 @@ app.use(expressValidator({
         while (namespace.length) {
             formParam += '[' + namespace.shift() + ']';
         }
-
         return {
             param: formParam,
             msg: msg,
             value: value
-        }
+        };
     }
 }));
 
@@ -78,6 +96,7 @@ app.use(function(req, res, next) {
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/posts', posts);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

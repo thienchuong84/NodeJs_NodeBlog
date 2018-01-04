@@ -42,9 +42,10 @@ p {
     margin: 0;
 }
 
-a {
+
+/* a {
     color: #00B7FF;
-}
+} */
 
 nav {
     background: #404137;
@@ -71,4 +72,65 @@ nav a.current,
 nav a:hover {
     background: #83cd29;
     color: black;
+}
+
+
+/* class meta cua titlte */
+
+.meta {
+    padding: 7px;
+    border: 1px solid #ccc;
+    background: #ccc;
+    margin-bottom: 10px;
+}
+
+a.more {
+    display: block;
+    width: 80px;
+    background: #404137;
+    color: #fff;
+    padding: 10px;
+    margin-top: 30px;
+}
+
+.post {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+}
+
+.post h1 a {
+    color: #666;
+    text-decoration: none;
+}
+
+input,
+select,
+textaread {
+    margin-bottom: 15px;
+}
+
+
+/* phai convert label sang display-block truoc roi moi dung width duoc */
+
+label {
+    display: inline-block;
+    width: 180px;
+}
+
+input[type='text'],
+select,
+textarea {
+    padding: 3px;
+    height: 20px;
+    width: 200px;
+    border: 1px #ccc solid;
+}
+
+select {
+    height: 28px;
+}
+
+textarea {
+    height: 70px;
+    width: 400px;
 }

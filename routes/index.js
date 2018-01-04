@@ -9,13 +9,9 @@ router.get('/', function(req, res, next) {
         if (err) {
             return handleError(err);
         }
-        console.log(res); // test
+        console.log(posts); // test
         res.render('index', { title: 'Express', posts: posts });
     });
-    // res.render('index', { title: 'Express' });
-
-
-
 
 });
 
